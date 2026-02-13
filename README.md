@@ -177,18 +177,20 @@ T3._FINAL: Warehouse (Validated snapshots)
   ↓
 T5: Warehouse (T-SQL views → Presentation)
   ↓
-Semantic Layer (Direct Lake on SQL + DirectQuery)
+Semantic Layer (Direct Lake on OneLake + DirectQuery)
   ↓
 Power BI Reports
 ```
 
 **Key Technologies:**
-- **T1**: Data Factory (ingestion) + Lakehouse (VARIANT storage)
-- **T2**: Warehouse (T-SQL stored procedures for SCD2)
-- **T3**: Warehouse (Dataflows Gen2 for transformations)
-- **T3._FINAL**: Warehouse (zero-copy clones, Delta in OneLake)
+- **T1**: Data Factory (ingestion) + Lakehouse (VARIANT storage in OneLake)
+- **T2**: Warehouse (T-SQL stored procedures for SCD2, stored in OneLake)
+- **T3**: Warehouse (Dataflows Gen2 for transformations, stored in OneLake)
+- **T3._FINAL**: Warehouse (zero-copy clones, Delta/Parquet in OneLake)
 - **T5**: Warehouse (T-SQL views)
-- **Semantic**: Direct Lake on SQL (Warehouse SQL endpoint) + DirectQuery for views
+- **Semantic**: Direct Lake on OneLake (Parquet files) + DirectQuery fallback for views
+
+**Key Architectural Point**: OneLake is the unified storage layer. Both Lakehouse and Warehouse store data in OneLake as Delta/Parquet files. Direct Lake accesses these OneLake Parquet files directly, whether accessed via Warehouse or Lakehouse.
 
 ---
 
@@ -208,7 +210,7 @@ Power BI Reports
 - **Data Factory**: T1 ingestion + pipeline orchestration
 - **Dataflows Gen2**: T3 transformations only
 - **T-SQL**: T2 stored procedures, error handling, batch processing
-- **Direct Lake on SQL**: Warehouse SQL endpoint → in-memory cache (_FINAL tables)
+- **Direct Lake on OneLake**: OneLake Parquet files → in-memory cache (_FINAL tables)
 - **DirectQuery**: T5 views → SQL pushdown (automatic fallback)
 
 ---

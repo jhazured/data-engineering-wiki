@@ -7,7 +7,7 @@ This guide implements HR analytics using the standardized Fabric architecture wi
 - **T2**: Warehouse (SCD2 via T-SQL stored procedures)
 - **T3**: Warehouse (transformations via Dataflows Gen2)
 - **T5**: Warehouse (presentation views)
-- **Semantic Layer**: Direct Lake on SQL
+- **Semantic Layer**: Direct Lake on OneLake
 
 **Time estimate**: 6-8 hours for full implementation
 
@@ -15,7 +15,7 @@ This guide implements HR analytics using the standardized Fabric architecture wi
 
 ## Architecture Overview
 
-**CRITICAL**: This architecture uses **Direct Lake on SQL endpoints** (not Direct Lake on OneLake).
+**CRITICAL**: This architecture uses **Direct Lake on OneLake Parquet files** as primary mode, with DirectQuery fallback for views.
 
 ```
 Sample JSON/XML Files
@@ -38,21 +38,31 @@ T3 Data Modeling (Facts & Dims)
 T3._FINAL tables (Delta in OneLake)
   ↓
 T5 (Views - presentation layer)
-  ↓ (via Warehouse SQL analytics endpoint)
-Direct Lake on SQL Semantic Model
-  - Connection: Warehouse SQL analytics endpoint
-  - _FINAL tables → Direct Lake mode (cached in memory)
-  - T5 views → DirectQuery fallback (automatic)
-  - Single Warehouse source (not multi-source)
+  ↓
+Direct Lake on OneLake Semantic Model
+  - Connection: OneLake Parquet files
+  - T3._FINAL tables (Delta/Parquet in OneLake) → Direct Lake mode (cached in-memory)
+  - T5 views → DirectQuery fallback (automatic when needed)
+  - Dual-mode operation (seamless switching)
   ↓
 Power BI Reports
 ```
 
-**Why Direct Lake on SQL (not OneLake):**
-- ✅ DirectQuery fallback works for T5 views (required)
-- ✅ Datasource deployment rules work (Dev/Test/Prod)
-- ✅ Single warehouse architecture (no multi-source)
-- ✅ SQL-based security via endpoint (standard pattern)
+**Why Direct Lake on OneLake (per SOW requirements):**
+- ✅ High-performance in-memory caching of Parquet files
+- ✅ No data import required (direct access to OneLake)
+- ✅ Automatic optimization by query engine
+- ✅ Seamless DirectQuery fallback for complex queries/views
+- ✅ OneLake as unified storage layer
+- ✅ Zero-copy architecture throughout
+
+**Key Architectural Point:**
+- **OneLake is the storage layer** - Both Lakehouse and Warehouse store data in OneLake as Delta/Parquet files
+- Warehouse adds SQL query engine on top of OneLake storage
+- Lakehouse adds Spark engine on top of OneLake storage
+- Direct Lake accesses the underlying OneLake Parquet files directly
+- T3._FINAL tables (created in Warehouse) are stored as Delta/Parquet in OneLake
+- Direct Lake connects to these OneLake files, regardless of whether they're accessed via Warehouse or Lakehouse
 
 ---
 
@@ -1082,46 +1092,57 @@ EXEC t3.usp_refresh_final_clones;
 
 ## Phase 7: Direct Lake Semantic Model (60 mins)
 
-### 7.1 Create Semantic Model (Direct Lake on SQL)
+### 7.1 Create Semantic Model (Direct Lake on OneLake)
 
-**CRITICAL**: Use **Direct Lake on SQL endpoints** mode (not Direct Lake on OneLake).
+**CRITICAL**: Use **Direct Lake on OneLake Parquet files** mode.
 
-**Why Direct Lake on SQL:**
-- Required for DirectQuery fallback on T5 views
-- Required for datasource deployment rules across environments
-- Warehouse SQL analytics endpoint provides single-source connection
+**Why Direct Lake on OneLake:**
+- High-performance in-memory caching of Parquet files
+- Direct access to OneLake unified storage layer
+- Automatic optimization by query engine
+- Seamless DirectQuery fallback for views and complex queries
+- Zero-copy architecture throughout
 
-**How to create Direct Lake on SQL semantic model:**
+**Key Understanding:**
+- **OneLake is the storage layer** - Warehouse tables are stored as Delta/Parquet files in OneLake
+- When you create tables in Warehouse, they're automatically stored in OneLake
+- Direct Lake accesses these OneLake Parquet files directly
+- Whether you connect via Warehouse endpoint or OneLake catalog, you're accessing the same OneLake storage
 
+**How to create Direct Lake on OneLake semantic model:**
+
+**Option 1: Via Warehouse (Recommended for this architecture)**
 1. In Fabric workspace → **New** → **Semantic Model**
 2. Name: `HR_Analytics_Semantic`
-3. **Connection method**: Select **SQL analytics endpoint** (NOT OneLake catalog)
-   - Navigate to your Warehouse: `HR_Analytics_Warehouse`
-   - Select the **SQL analytics endpoint** connection
+3. **Connection method**: Select Warehouse `HR_Analytics_Warehouse`
+   - This connects to Warehouse tables which are stored in OneLake as Delta/Parquet
+   - Direct Lake will access the underlying OneLake Parquet files
 4. Select tables:
-   - `t3.dim_employee_FINAL`
-   - `t3.dim_department_FINAL`
-   - `t3.dim_time_FINAL`
-   - `t3.fact_payroll_FINAL`
+   - `t3.dim_employee_FINAL` (stored as Delta/Parquet in OneLake)
+   - `t3.dim_department_FINAL` (stored as Delta/Parquet in OneLake)
+   - `t3.dim_time_FINAL` (stored as Delta/Parquet in OneLake)
+   - `t3.fact_payroll_FINAL` (stored as Delta/Parquet in OneLake)
 5. Select views:
-   - `t5.vw_payroll_monthly_summary`
+   - `t5.vw_payroll_monthly_summary` (will use DirectQuery fallback)
+
+**Option 2: Via OneLake Catalog (Alternative)**
+1. In Power BI Desktop → **Get Data** → **OneLake data hub**
+2. Navigate to your workspace → Warehouse → Tables
+3. Select T3._FINAL tables
+4. This also connects to the same OneLake Parquet files
 
 **Verification:**
 - Open semantic model in Power BI Desktop
-- View → TMDL View
-- Check shared expression - should show `Sql.Database` (not `AzureStorage.DataLake`)
-- This confirms Direct Lake on SQL mode
+- Check Storage Mode for tables: Should show **Direct Lake** ✓
+- Check Storage Mode for views: Should show **DirectQuery** ✓ (automatic fallback)
+- Tables are cached in-memory from OneLake Parquet files
+- Views automatically use DirectQuery when needed
 
-**Important distinctions:**
-
-| Feature | Direct Lake on SQL (✅ We're using this) | Direct Lake on OneLake (❌ Not using) |
-|---------|------------------------------------------|--------------------------------------|
-| Connection | Via Warehouse SQL analytics endpoint | Direct to OneLake Delta tables |
-| DirectQuery fallback | ✅ Yes (for views, RLS) | ❌ No (Direct Lake or fail) |
-| Multi-source | ❌ Single Warehouse only | ✅ Multiple Lakehouses/Warehouses |
-| Datasource deployment rules | ✅ Yes | ❌ No |
-| Created from | Fabric web interface | Power BI Desktop OneLake catalog |
-| Expression in TMDL | `Sql.Database` | `AzureStorage.DataLake` |
+**Important:**
+- Both connection methods access the same OneLake Parquet files
+- Warehouse connection provides SQL query capabilities and DirectQuery fallback
+- OneLake catalog connection provides direct Parquet access
+- For this architecture, Warehouse connection is recommended for T5 view support
 
 ### 7.2 Configure Relationships
 
@@ -1134,31 +1155,37 @@ fact_payroll_FINAL[pay_date_key] → dim_time_FINAL[time_key] (Many-to-One)
 dim_employee_FINAL[department_id] → dim_department_FINAL[dept_id] (Many-to-One)
 ```
 
-### 7.3 Verify Direct Lake on SQL Mode
+### 7.3 Verify Direct Lake on OneLake Mode
 
 **Check Storage Mode in semantic model settings:**
 
 **Tables (_FINAL):**
 - Storage mode: **Direct Lake** ✓
 - Data is cached in-memory on first query
-- Reads directly from Delta parquet files in OneLake
+- Reads directly from Delta/Parquet files in OneLake
 - Fast, columnar compression
+- No refresh required - direct access to OneLake
 
 **Views (T5):**
 - Storage mode: **DirectQuery** (automatic fallback) ✓
-- Cannot use Direct Lake (views aren't Delta tables)
-- Queries execute via SQL analytics endpoint
+- Cannot use Direct Lake (views aren't Delta/Parquet files)
+- Queries execute via Warehouse SQL endpoint
 - Acceptable performance for aggregated data
+- Automatic fallback when Direct Lake cannot handle query
 
-**How DirectQuery fallback works with Direct Lake on SQL:**
+**How DirectQuery fallback works with Direct Lake on OneLake:**
 1. Query requests data from T5 view
-2. Direct Lake detects source is a SQL view (not Delta table)
+2. Direct Lake detects source is a SQL view (not Parquet file)
 3. Automatically falls back to DirectQuery mode
-4. Query sent to Warehouse SQL analytics endpoint
+4. Query sent to Warehouse SQL endpoint (which queries OneLake data)
 5. Results returned to semantic model
 6. No configuration needed - this is automatic
 
-**Important**: Direct Lake on OneLake does NOT support DirectQuery fallback - queries would fail on views. This is why we use Direct Lake on SQL.
+**Key Point:**
+- Direct Lake accesses OneLake Parquet files directly (high performance)
+- DirectQuery accesses same OneLake data via Warehouse SQL endpoint (for views/complex queries)
+- Both modes access the same OneLake storage layer
+- Seamless switching between modes based on query requirements
 
 ### 7.4 Create DAX Measures
 
@@ -1334,41 +1361,41 @@ SELECT TOP 10 * FROM t5.vw_payroll_detail;
 
 ### 11.2 Configure Datasource Deployment Rules
 
-**Direct Lake on SQL endpoints supports datasource deployment rules** - this is critical for Dev/Test/Prod promotion.
+**Direct Lake on OneLake supports datasource deployment rules** - this is critical for Dev/Test/Prod promotion.
 
 In deployment pipeline settings → Target stage (Test/Prod):
 
 **Semantic Model datasource rules:**
 
 For `HR_Analytics_Semantic`:
-- **Source**: SQL analytics endpoint
+- **Source**: Warehouse connection (which accesses OneLake Parquet files)
 - **Dev workspace**: 
-  - Connection: `HR_Analytics_Warehouse` SQL endpoint (Dev)
+  - Connection: `HR_Analytics_Warehouse` (Dev) → OneLake Parquet files (Dev workspace)
 - **Test workspace**: 
-  - Connection: `HR_Analytics_Warehouse` SQL endpoint (Test)
-  - Rule: Automatically rebind to Test warehouse endpoint
+  - Connection: `HR_Analytics_Warehouse` (Test) → OneLake Parquet files (Test workspace)
+  - Rule: Automatically rebind to Test warehouse
 - **Prod workspace**: 
-  - Connection: `HR_Analytics_Warehouse` SQL endpoint (Prod)
-  - Rule: Automatically rebind to Prod warehouse endpoint
+  - Connection: `HR_Analytics_Warehouse` (Prod) → OneLake Parquet files (Prod workspace)
+  - Rule: Automatically rebind to Prod warehouse
 
 **How datasource rules work:**
 1. Deploy semantic model from Dev → Test
-2. Deployment pipeline automatically updates connection string
-3. Semantic model now points to Test warehouse SQL endpoint
-4. _FINAL tables read from Test warehouse Delta files
+2. Deployment pipeline automatically updates connection
+3. Semantic model now points to Test warehouse
+4. Direct Lake accesses Test workspace OneLake Parquet files
 5. No manual rebinding required
 
-**Why this only works with Direct Lake on SQL:**
-- Direct Lake on SQL uses a single SQL endpoint connection string
-- Connection string can be parameterized/replaced during deployment
-- Direct Lake on OneLake uses OneLake catalog (no single connection string)
-- OneLake catalog doesn't support datasource deployment rules
+**Key Point:**
+- Each workspace has its own OneLake storage
+- Warehouse connection points to workspace-specific OneLake files
+- Deployment rules update the connection to point to target workspace
+- Direct Lake accesses the correct OneLake Parquet files for each environment
 
 **Verification:**
 After deployment, open semantic model in each environment:
-- Dev: Should connect to Dev warehouse endpoint
-- Test: Should connect to Test warehouse endpoint
-- Prod: Should connect to Prod warehouse endpoint
+- Dev: Should connect to Dev warehouse → Dev OneLake files
+- Test: Should connect to Test warehouse → Test OneLake files
+- Prod: Should connect to Prod warehouse → Prod OneLake files
 
 ### 11.3 Deployment Order
 
@@ -1424,14 +1451,13 @@ After deployment, open semantic model in each environment:
 - ✅ No joins, aggregations, or heavy transformations in T5
 
 ### Semantic Layer
-- ✅ **Direct Lake on SQL mode** (NOT Direct Lake on OneLake)
-- ✅ Connection via Warehouse **SQL analytics endpoint** (not OneLake catalog)
-- ✅ Semantic model TMDL shows `Sql.Database` expression (not `AzureStorage.DataLake`)
-- ✅ _FINAL tables → Direct Lake (in-memory cache)
-- ✅ T5 views → DirectQuery fallback (automatic via SQL endpoint)
+- ✅ **Direct Lake on OneLake mode** (primary)
+- ✅ Connection to OneLake Parquet files (via Warehouse or OneLake catalog)
+- ✅ _FINAL tables → Direct Lake (in-memory cache from OneLake Parquet files)
+- ✅ T5 views → DirectQuery fallback (automatic when needed)
 - ✅ No special configuration needed for dual-mode operation
 - ✅ Datasource deployment rules configured and working for Dev/Test/Prod
-- ✅ Single Warehouse source (not multi-source composite model)
+- ✅ OneLake as unified storage layer (Warehouse tables stored in OneLake)
 
 ### Orchestration
 - ✅ End-to-end pipeline completes in <30 mins
@@ -1464,19 +1490,20 @@ After deployment, open semantic model in each environment:
 | T3 | Warehouse (Dataflows Gen2) | Transformations & modeling | Append-only, no MERGE |
 | T3._FINAL | Warehouse (Zero-copy clone) | Validated snapshots | Isolates T5 from T3 failures |
 | T5 | Warehouse (Views) | Presentation layer | Git-managed view scripts |
-| Semantic | **Direct Lake on SQL** | Analytics consumption | Single Warehouse SQL endpoint |
+| Semantic | **Direct Lake on OneLake** | Analytics consumption | OneLake Parquet files |
 | | | | DirectQuery fallback for views |
 | | | | Datasource deployment rules |
 
-**Why Direct Lake on SQL (not OneLake):**
+**Why Direct Lake on OneLake (per SOW requirements):**
 
-| Requirement | Direct Lake on SQL | Direct Lake on OneLake |
-|-------------|-------------------|------------------------|
-| T5 views with DirectQuery fallback | ✅ Required | ❌ Not supported |
-| Datasource deployment rules (Dev/Test/Prod) | ✅ Required | ❌ Not supported |
-| Single Warehouse architecture | ✅ Perfect fit | ⚠️ Overkill (multi-source) |
-| SQL-based security model | ✅ Standard pattern | ⚠️ OneLake Security only |
-| Connection method | SQL endpoint string | OneLake catalog |
+| Requirement | Direct Lake on OneLake | Notes |
+|-------------|----------------------|-------|
+| High-performance caching | ✅ Yes | In-memory caching of Parquet files |
+| DirectQuery fallback for views | ✅ Yes | Automatic fallback when needed |
+| Datasource deployment rules | ✅ Yes | Works with Warehouse connection |
+| OneLake unified storage | ✅ Yes | Primary storage layer |
+| Zero-copy architecture | ✅ Yes | No data duplication |
+| Connection method | OneLake Parquet files | Via Warehouse or OneLake catalog |
 
 ---
 

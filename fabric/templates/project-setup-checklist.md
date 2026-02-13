@@ -126,7 +126,7 @@ Use this checklist when setting up a new project using the T0-T5 architecture pa
 ## Phase 6: Semantic Layer Setup
 
 ### Semantic Model
-- [ ] Create semantic model (Direct Lake on SQL)
+- [ ] Create semantic model (Direct Lake on OneLake)
 - [ ] Connect to Warehouse SQL analytics endpoint
 - [ ] Select _FINAL tables
 - [ ] Select T5 views

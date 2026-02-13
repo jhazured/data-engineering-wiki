@@ -39,7 +39,7 @@ graph TB
     end
     
     subgraph "Semantic Layer"
-        SEM_TECH1[Direct Lake on SQL<br/>Warehouse Endpoint]
+        SEM_TECH1[Direct Lake on OneLake<br/>Parquet Files]
         SEM_TECH2[DirectQuery<br/>SQL Pushdown]
         SEM_TECH1 --> SEM_TECH2
     end
@@ -84,7 +84,7 @@ graph TB
 | T3 | Dataflows Gen2 | Warehouse (Delta) | Transformations |
 | T3._FINAL | Zero-Copy Clone | Delta in OneLake | Validated snapshots |
 | T5 | T-SQL Views | Warehouse | Presentation layer |
-| Semantic | Direct Lake on SQL | Warehouse SQL endpoint | Analytics consumption |
+| Semantic | Direct Lake on OneLake | OneLake Parquet files | Analytics consumption |
 
 ## Related Documentation
 

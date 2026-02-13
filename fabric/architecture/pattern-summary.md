@@ -334,14 +334,16 @@ The T0-T5 architecture pattern is a standardized, layered approach to building e
 - **Flexibility**: Easy to modify without data migration
 - **Security**: Can apply RLS at view level
 
-### Why Direct Lake on OneLake/SQL?
+### Why Direct Lake on OneLake?
 
-- **Performance**: In-memory caching for fast queries
-- **OneLake Integration**: Direct access to Parquet files in OneLake
+- **Performance**: In-memory caching of OneLake Parquet files for fast queries
+- **OneLake Integration**: Direct access to Parquet files in unified storage layer
 - **Automatic Optimization**: Query engine optimizes automatically
-- **Dual-Mode**: Seamless fallback to DirectQuery when needed
-- **No Refresh**: Direct access to OneLake Parquet files or Warehouse data
-- **Flexibility**: Can use OneLake Parquet files or Warehouse tables
+- **Dual-Mode**: Seamless fallback to DirectQuery for views/complex queries
+- **No Import**: Direct access to OneLake data without refresh
+- **Zero-Copy**: Leverages OneLake as single source of truth
+
+**Note**: DirectQuery is used automatically for T5 views and when Direct Lake cannot handle specific query patterns. Both Direct Lake and DirectQuery access the same OneLake storage layer - Direct Lake reads Parquet files directly, while DirectQuery accesses via Warehouse SQL endpoint.
 
 ---
 

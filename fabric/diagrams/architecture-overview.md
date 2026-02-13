@@ -42,8 +42,8 @@ graph TB
     end
     
     subgraph "Semantic Layer"
-        SEM[Direct Lake on SQL<br/>Semantic Model]
-        SEM --> SEM_DL[Direct Lake<br/>_FINAL Tables]
+        SEM[Direct Lake on OneLake<br/>Semantic Model]
+        SEM --> SEM_DL[Direct Lake<br/>OneLake Parquet Files]
         SEM --> SEM_DQ[DirectQuery<br/>T5 Views]
     end
     
@@ -109,9 +109,9 @@ graph TB
 - RLS-ready
 
 ### Semantic Layer
-- Direct Lake on SQL endpoints
-- Automatic DirectQuery fallback
-- Single Warehouse source
+- Direct Lake on OneLake Parquet files
+- Automatic DirectQuery fallback for views
+- OneLake as unified storage layer
 
 ## Related Documentation
 

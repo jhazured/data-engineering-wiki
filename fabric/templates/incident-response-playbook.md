@@ -120,7 +120,7 @@ This playbook provides step-by-step procedures for responding to incidents in th
 
 **Resolution Steps:**
 1. Refresh semantic model if needed
-2. Verify Warehouse SQL endpoint connectivity
+2. Verify Warehouse connection and OneLake access
 3. Optimize DAX measures
 4. Add aggregations if needed
 5. Verify relationships

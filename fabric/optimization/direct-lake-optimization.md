@@ -61,22 +61,25 @@ Direct Lake is Microsoft Fabric's high-performance analytics mode that enables s
    - `t3/dim_department_FINAL` (Parquet in OneLake)
    - `t3/fact_payroll_FINAL` (Parquet in OneLake)
 
-**Option 2: Direct Lake on SQL Warehouse**
+**Option 2: Direct Lake via Warehouse Connection**
 
 1. Create semantic model
-2. Select **Direct Lake on SQL** mode
-3. Connect to Warehouse SQL endpoint
-4. Select T3._FINAL tables:
+2. Connect to Warehouse
+3. Select T3._FINAL tables (stored as Delta/Parquet in OneLake):
    - `t3.dim_employee_FINAL`
    - `t3.dim_department_FINAL`
    - `t3.dim_time_FINAL`
    - `t3.fact_payroll_FINAL`
 
+**Key Point**: Warehouse tables are stored as Delta/Parquet files in OneLake. Connecting via Warehouse still accesses OneLake Parquet files - Direct Lake reads the underlying OneLake storage.
+
 **Storage Mode Configuration:**
 
 - **OneLake Parquet files** → **Direct Lake** (in-memory cache)
-- **Warehouse T3._FINAL tables** → **Direct Lake** (in-memory cache)
+- **Warehouse T3._FINAL tables** → **Direct Lake** (reads OneLake Parquet files)
 - **T5 views** → **DirectQuery** (automatic fallback)
+
+**Both options access OneLake storage** - Option 1 directly, Option 2 via Warehouse (which stores in OneLake).
 - No manual configuration needed for dual-mode
 
 ### Best Practices
