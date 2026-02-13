@@ -1,5 +1,11 @@
 # Microsoft Fabric Data Warehouse Knowledge Base
 
+[![Verify](https://github.com/jhazured/data-engineering-wiki/actions/workflows/verify.yml/badge.svg)](https://github.com/jhazured/data-engineering-wiki/actions/workflows/verify.yml)
+[![Last commit](https://img.shields.io/github/last-commit/jhazured/data-engineering-wiki?color=blue)](https://github.com/jhazured/data-engineering-wiki)
+[![Microsoft Fabric](https://img.shields.io/badge/Microsoft-Fabric-blue.svg)](https://learn.microsoft.com/fabric/)
+[![Power BI](https://img.shields.io/badge/Power_BI-Direct_Lake-blue.svg)](https://powerbi.microsoft.com/)
+[![T-SQL](https://img.shields.io/badge/T--SQL-SQL_Server-blue.svg)](https://learn.microsoft.com/sql/t-sql/)
+
 ## Overview
 
 This knowledge base provides comprehensive documentation for implementing enterprise data warehouses in Microsoft Fabric using the **T0-T5 architecture pattern**. It covers patterns, best practices, and implementation guides for all layers of the architecture.
