@@ -91,13 +91,15 @@ This guide helps you get started quickly based on your role and needs.
 **Goal**: Create high-performance semantic model
 
 **Files to Read:**
-1. [Direct Lake Optimization](../optimization/direct-lake-optimization.md) - All patterns
-2. [T0-T5 Architecture Pattern](../architecture/architecture-pattern.md) - Phase 7 (Semantic Model)
-3. [Performance Optimization](../optimization/performance-optimization.md) - DAX optimization
+1. **[Direct Lake Modes & T5 View Compatibility](direct-lake-modes-t5-compatibility.md)** - **START HERE** - Choose the right Direct Lake approach
+2. [Direct Lake Optimization](../optimization/direct-lake-optimization.md) - Performance optimization patterns
+3. [T0-T5 Architecture Pattern](../architecture/architecture-pattern.md) - Phase 7 (Semantic Model)
+4. [Performance Optimization](../optimization/performance-optimization.md) - DAX optimization
 
 **Key Points:**
+- Choose between Direct Lake on SQL Endpoints (simplest) or Hybrid T5 (maximum flexibility)
 - Use Direct Lake for OneLake Parquet files (primary)
-- Use DirectQuery for T5 views (automatic)
+- Use DirectQuery for T5 views (automatic fallback or separate connection)
 - Create aggregations for common queries
 - Optimize DAX measures
 

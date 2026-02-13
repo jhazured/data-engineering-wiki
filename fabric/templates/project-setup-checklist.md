@@ -126,10 +126,14 @@ Use this checklist when setting up a new project using the T0-T5 architecture pa
 ## Phase 6: Semantic Layer Setup
 
 ### Semantic Model
-- [ ] Create semantic model (Direct Lake on OneLake)
-- [ ] Connect to Warehouse SQL analytics endpoint
+- [ ] **Review**: [Direct Lake Modes & T5 View Compatibility](../../reference/direct-lake-modes-t5-compatibility.md) to choose approach
+- [ ] Choose approach:
+  - [ ] Option 1: Direct Lake on SQL Endpoints (simplest)
+  - [ ] Option 2: Hybrid T5 (base tables + views) - recommended for flexibility
+- [ ] Create semantic model
+- [ ] Connect to Warehouse SQL analytics endpoint (or OneLake for Hybrid T5)
 - [ ] Select _FINAL tables
-- [ ] Select T5 views
+- [ ] Select T5 views (or T5 base tables + views for Hybrid T5)
 - [ ] Verify Direct Lake mode (_FINAL tables)
 - [ ] Verify DirectQuery mode (T5 views)
 - [ ] Configure relationships

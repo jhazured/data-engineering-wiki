@@ -178,7 +178,10 @@ This document records key architectural decisions for the T0-T5 data warehouse p
 - Automatic cache management
 - Optimize Parquet files for best performance
 
-**Related**: [Direct Lake Optimization](../optimization/direct-lake-optimization.md), [OneLake Architecture](../architecture/pattern-summary.md#onelake-integration)
+**Related**: 
+- [Direct Lake Modes & T5 View Compatibility](direct-lake-modes-t5-compatibility.md) - Comprehensive guide on Direct Lake modes and T5 view options
+- [Direct Lake Optimization](../optimization/direct-lake-optimization.md) - Performance optimization
+- [OneLake Architecture](../architecture/pattern-summary.md#onelake-integration) - OneLake integration patterns
 
 ---
 
@@ -206,7 +209,9 @@ This document records key architectural decisions for the T0-T5 data warehouse p
 - Real-time data access
 - No manual configuration needed
 
-**Related**: [Direct Lake Optimization](../optimization/direct-lake-optimization.md#pattern-8-dual-mode-operation)
+**Related**: 
+- [Direct Lake Modes & T5 View Compatibility](direct-lake-modes-t5-compatibility.md) - Comprehensive guide on T5 view options and Hybrid T5 approach
+- [Direct Lake Optimization](../optimization/direct-lake-optimization.md#pattern-8-dual-mode-operation) - Dual-mode operation patterns
 
 ---
 

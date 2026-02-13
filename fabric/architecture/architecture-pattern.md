@@ -1109,9 +1109,13 @@ EXEC t3.usp_refresh_final_clones;
 - Direct Lake accesses these OneLake Parquet files directly
 - Whether you connect via Warehouse endpoint or OneLake catalog, you're accessing the same OneLake storage
 
-**How to create Direct Lake on OneLake semantic model:**
+**How to create Direct Lake semantic model:**
 
-**Option 1: Via Warehouse (Recommended for this architecture)**
+**⚠️ IMPORTANT: See [Direct Lake Modes & T5 View Compatibility](../reference/direct-lake-modes-t5-compatibility.md) for comprehensive guidance on choosing the right approach.**
+
+**Two Main Approaches:**
+
+**Approach 1: Direct Lake on SQL Endpoints (Simplest - Recommended for most cases)**
 1. In Fabric workspace → **New** → **Semantic Model**
 2. Name: `HR_Analytics_Semantic`
 3. **Connection method**: Select Warehouse `HR_Analytics_Warehouse`
@@ -1123,13 +1127,13 @@ EXEC t3.usp_refresh_final_clones;
    - `t3.dim_time_FINAL` (stored as Delta/Parquet in OneLake)
    - `t3.fact_payroll_FINAL` (stored as Delta/Parquet in OneLake)
 5. Select views:
-   - `t5.vw_payroll_monthly_summary` (will use DirectQuery fallback)
+   - `t5.vw_payroll_monthly_summary` (will use DirectQuery fallback automatically)
 
-**Option 2: Via OneLake Catalog (Alternative)**
-1. In Power BI Desktop → **Get Data** → **OneLake data hub**
-2. Navigate to your workspace → Warehouse → Tables
-3. Select T3._FINAL tables
-4. This also connects to the same OneLake Parquet files
+**Approach 2: Hybrid T5 (Base Tables + Views) - Best flexibility**
+- See [Direct Lake Modes & T5 View Compatibility](../reference/direct-lake-modes-t5-compatibility.md#option-1-hybrid-t5-base-tables--views--recommended) for detailed implementation
+- Create T5 base tables for stable metrics (materialized aggregations)
+- Keep T5 views for dynamic calculations
+- Use composite semantic model: Direct Lake on OneLake for tables + DirectQuery connection for views
 
 **Verification:**
 - Open semantic model in Power BI Desktop
@@ -1138,11 +1142,12 @@ EXEC t3.usp_refresh_final_clones;
 - Tables are cached in-memory from OneLake Parquet files
 - Views automatically use DirectQuery when needed
 
-**Important:**
-- Both connection methods access the same OneLake Parquet files
+**Key Points:**
+- Both approaches access the same OneLake Parquet files
 - Warehouse connection provides SQL query capabilities and DirectQuery fallback
-- OneLake catalog connection provides direct Parquet access
-- For this architecture, Warehouse connection is recommended for T5 view support
+- Direct Lake on SQL Endpoints is simplest (single connection)
+- Hybrid T5 provides maximum flexibility (change calculations in 2 minutes vs 30-60 minutes)
+- See the [comprehensive guide](../reference/direct-lake-modes-t5-compatibility.md) for decision matrix and detailed comparison
 
 ### 7.2 Configure Relationships
 
@@ -1173,7 +1178,9 @@ dim_employee_FINAL[department_id] → dim_department_FINAL[dept_id] (Many-to-One
 - Acceptable performance for aggregated data
 - Automatic fallback when Direct Lake cannot handle query
 
-**How DirectQuery fallback works with Direct Lake on OneLake:**
+**How DirectQuery fallback works:**
+
+**With Direct Lake on SQL Endpoints (Approach 1):**
 1. Query requests data from T5 view
 2. Direct Lake detects source is a SQL view (not Parquet file)
 3. Automatically falls back to DirectQuery mode
@@ -1181,11 +1188,17 @@ dim_employee_FINAL[department_id] → dim_department_FINAL[dept_id] (Many-to-One
 5. Results returned to semantic model
 6. No configuration needed - this is automatic
 
+**With Hybrid T5 (Approach 2):**
+- T5 base tables use Direct Lake on OneLake (high performance)
+- T5 views use separate DirectQuery connection (flexibility)
+- See [Direct Lake Modes & T5 View Compatibility](../reference/direct-lake-modes-t5-compatibility.md#recommended-approach-hybrid-t5) for details
+
 **Key Point:**
 - Direct Lake accesses OneLake Parquet files directly (high performance)
 - DirectQuery accesses same OneLake data via Warehouse SQL endpoint (for views/complex queries)
 - Both modes access the same OneLake storage layer
 - Seamless switching between modes based on query requirements
+- **See [Direct Lake Modes & T5 View Compatibility](../reference/direct-lake-modes-t5-compatibility.md) for comprehensive guidance**
 
 ### 7.4 Create DAX Measures
 

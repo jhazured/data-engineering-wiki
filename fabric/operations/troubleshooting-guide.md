@@ -536,6 +536,7 @@ This troubleshooting guide provides solutions for common issues encountered when
 - Verify storage mode
 - Monitor Direct Lake performance
 - Test semantic model regularly
+- Review [Direct Lake Modes & T5 View Compatibility](../reference/direct-lake-modes-t5-compatibility.md) for best practices and troubleshooting
 
 ---
 

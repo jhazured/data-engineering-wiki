@@ -260,6 +260,8 @@ The T0-T5 architecture pattern is a standardized, layered approach to building e
 
 **Technology**: Fabric Semantic Model (Direct Lake on OneLake/SQL)
 
+**⚠️ Important**: See [Direct Lake Modes & T5 View Compatibility](../reference/direct-lake-modes-t5-compatibility.md) for comprehensive guidance on choosing between Direct Lake on OneLake vs Direct Lake on SQL Endpoints, and the Hybrid T5 approach for maximum flexibility.
+
 **Data Flow**: 
 - **OneLake Parquet files** → Direct Lake (in-memory cache)
 - **T3._FINAL tables** (if in Warehouse) → Direct Lake (in-memory cache)
