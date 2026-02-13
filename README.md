@@ -1,6 +1,5 @@
 # Microsoft Fabric Data Warehouse Knowledge Base
 
-[![Verify](https://github.com/jhazured/data-engineering-wiki/actions/workflows/verify.yml/badge.svg)](https://github.com/jhazured/data-engineering-wiki/actions/workflows/verify.yml)
 [![Last commit](https://img.shields.io/github/last-commit/jhazured/data-engineering-wiki?color=blue)](https://github.com/jhazured/data-engineering-wiki)
 [![Microsoft Fabric](https://img.shields.io/badge/Microsoft-Fabric-blue.svg)](https://learn.microsoft.com/fabric/)
 [![Power BI](https://img.shields.io/badge/Power_BI-Direct_Lake-blue.svg)](https://powerbi.microsoft.com/)
