@@ -1,9 +1,9 @@
 # Microsoft Fabric Data Warehouse Knowledge Base
 
-[![Last commit](https://img.shields.io/github/last-commit/jhazured/data-engineering-wiki?color=blue)](https://github.com/jhazured/data-engineering-wiki)
-[![Microsoft Fabric](https://img.shields.io/badge/Microsoft-Fabric-blue.svg)](https://learn.microsoft.com/fabric/)
-[![Power BI](https://img.shields.io/badge/Power_BI-Direct_Lake-blue.svg)](https://powerbi.microsoft.com/)
-[![T-SQL](https://img.shields.io/badge/T--SQL-SQL_Server-blue.svg)](https://learn.microsoft.com/sql/t-sql/)
+[![Last commit](https://img.shields.io/github/last-commit/jhazured/data-engineering-wiki?color=gray)](https://github.com/jhazured/data-engineering-wiki)
+[![Microsoft Fabric](https://img.shields.io/badge/Microsoft-Fabric-0078D4.svg)](https://learn.microsoft.com/fabric/)
+[![Power BI](https://img.shields.io/badge/Power_BI-Direct_Lake-F2C811.svg)](https://powerbi.microsoft.com/)
+[![T-SQL](https://img.shields.io/badge/T--SQL-SQL_Server-CC2927.svg)](https://learn.microsoft.com/sql/t-sql/)
 
 ## Overview
 
