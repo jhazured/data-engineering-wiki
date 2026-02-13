@@ -15,40 +15,44 @@ This guide implements HR analytics using the standardized Fabric architecture wi
 
 ## Architecture Overview
 
+**CRITICAL**: This architecture uses **Direct Lake on SQL endpoints** (not Direct Lake on OneLake).
+
 ```
 Sample JSON/XML Files
   ↓
-Data Factory Pipelines (T1 Ingestion)
+Data Factory Pipelines
   ↓
 T1_DATA_LAKE (Lakehouse)
   - VARIANT base tables
   - Materialized views (flattened)
-  ↓ (shortcuts)
+  ↓ (shortcuts to Warehouse)
 T2 (Warehouse - T-SQL)
   - SCD2 MERGE operations
   - Full historical record
-  ↓ (Dataflows Gen2 - T3 Transformations)
+  ↓ (Dataflows Gen2)
 T3.ref (Reference data)
 T3.table_01 (Base transforms)
 T3.table_02 (Joins)
 T3 Data Modeling (Facts & Dims)
-  ↓ (zero-copy clone)
-T3._FINAL tables
+  ↓ (zero-copy clone within Warehouse)
+T3._FINAL tables (Delta in OneLake)
   ↓
 T5 (Views - presentation layer)
-  ↓
-Direct Lake on OneLake/SQL Semantic Model
-  - OneLake Parquet files → Direct Lake
-  - T3._FINAL tables → Direct Lake
-  - T5 views → DirectQuery fallback
+  ↓ (via Warehouse SQL analytics endpoint)
+Direct Lake on SQL Semantic Model
+  - Connection: Warehouse SQL analytics endpoint
+  - _FINAL tables → Direct Lake mode (cached in memory)
+  - T5 views → DirectQuery fallback (automatic)
+  - Single Warehouse source (not multi-source)
   ↓
 Power BI Reports
 ```
 
-**Key Technology Distinctions:**
-- **Data Factory**: T1 ingestion (copying data from external sources to Lakehouse)
-- **Dataflows Gen2**: T3 transformations (business logic, joins, aggregations)
-- **Data Factory**: Also orchestrates overall pipeline flow (T1 → T2 → T3 → T5)
+**Why Direct Lake on SQL (not OneLake):**
+- ✅ DirectQuery fallback works for T5 views (required)
+- ✅ Datasource deployment rules work (Dev/Test/Prod)
+- ✅ Single warehouse architecture (no multi-source)
+- ✅ SQL-based security via endpoint (standard pattern)
 
 ---
 
@@ -233,9 +237,7 @@ FROM raw_payroll;
 
 ---
 
-## Phase 3: Data Factory Pipelines - Load T1 (60 mins)
-
-**Note**: This phase uses **Data Factory** specifically for **T1 ingestion** - copying raw data from external sources into the Lakehouse. Transformations are handled by Dataflows Gen2 in Phase 5.
+## Phase 3: Data Factory - Load T1 (60 mins)
 
 ### 3.1 Create Linked Services
 
@@ -726,8 +728,6 @@ VALUES ('PL_T2_Process_SCD2', @pipeline().TriggerTime, GETDATE(), 'Failed', '@{a
 
 ## Phase 5: T3 - Transformation Layer via Dataflows Gen2 (90 mins)
 
-**Note**: This phase uses **Dataflows Gen2** for ALL T3 transformations. Data Factory is NOT used for transformations - it is only used for T1 ingestion. All business logic, joins, aggregations, and data quality transformations are done via Dataflows Gen2.
-
 ### 5.1 Create T3 Schema in Warehouse
 
 ```sql
@@ -1082,13 +1082,22 @@ EXEC t3.usp_refresh_final_clones;
 
 ## Phase 7: Direct Lake Semantic Model (60 mins)
 
-### 7.1 Create Semantic Model
+### 7.1 Create Semantic Model (Direct Lake on SQL)
 
-**CRITICAL**: Must use **Direct Lake on SQL** mode (not OneLake) for datasource deployment rules to work.
+**CRITICAL**: Use **Direct Lake on SQL endpoints** mode (not Direct Lake on OneLake).
 
-1. In Fabric workspace → **New** → **Semantic Model (Direct Lake)**
+**Why Direct Lake on SQL:**
+- Required for DirectQuery fallback on T5 views
+- Required for datasource deployment rules across environments
+- Warehouse SQL analytics endpoint provides single-source connection
+
+**How to create Direct Lake on SQL semantic model:**
+
+1. In Fabric workspace → **New** → **Semantic Model**
 2. Name: `HR_Analytics_Semantic`
-3. Source: **SQL analytics endpoint** of `HR_Analytics_Warehouse` (not OneLake)
+3. **Connection method**: Select **SQL analytics endpoint** (NOT OneLake catalog)
+   - Navigate to your Warehouse: `HR_Analytics_Warehouse`
+   - Select the **SQL analytics endpoint** connection
 4. Select tables:
    - `t3.dim_employee_FINAL`
    - `t3.dim_department_FINAL`
@@ -1096,6 +1105,23 @@ EXEC t3.usp_refresh_final_clones;
    - `t3.fact_payroll_FINAL`
 5. Select views:
    - `t5.vw_payroll_monthly_summary`
+
+**Verification:**
+- Open semantic model in Power BI Desktop
+- View → TMDL View
+- Check shared expression - should show `Sql.Database` (not `AzureStorage.DataLake`)
+- This confirms Direct Lake on SQL mode
+
+**Important distinctions:**
+
+| Feature | Direct Lake on SQL (✅ We're using this) | Direct Lake on OneLake (❌ Not using) |
+|---------|------------------------------------------|--------------------------------------|
+| Connection | Via Warehouse SQL analytics endpoint | Direct to OneLake Delta tables |
+| DirectQuery fallback | ✅ Yes (for views, RLS) | ❌ No (Direct Lake or fail) |
+| Multi-source | ❌ Single Warehouse only | ✅ Multiple Lakehouses/Warehouses |
+| Datasource deployment rules | ✅ Yes | ❌ No |
+| Created from | Fabric web interface | Power BI Desktop OneLake catalog |
+| Expression in TMDL | `Sql.Database` | `AzureStorage.DataLake` |
 
 ### 7.2 Configure Relationships
 
@@ -1108,11 +1134,31 @@ fact_payroll_FINAL[pay_date_key] → dim_time_FINAL[time_key] (Many-to-One)
 dim_employee_FINAL[department_id] → dim_department_FINAL[dept_id] (Many-to-One)
 ```
 
-### 7.3 Verify Direct Lake Mode
+### 7.3 Verify Direct Lake on SQL Mode
 
-**Check Storage Mode**:
-- `_FINAL` tables should show: **Direct Lake** ✓
-- T5 views should show: **DirectQuery** (automatic fallback)
+**Check Storage Mode in semantic model settings:**
+
+**Tables (_FINAL):**
+- Storage mode: **Direct Lake** ✓
+- Data is cached in-memory on first query
+- Reads directly from Delta parquet files in OneLake
+- Fast, columnar compression
+
+**Views (T5):**
+- Storage mode: **DirectQuery** (automatic fallback) ✓
+- Cannot use Direct Lake (views aren't Delta tables)
+- Queries execute via SQL analytics endpoint
+- Acceptable performance for aggregated data
+
+**How DirectQuery fallback works with Direct Lake on SQL:**
+1. Query requests data from T5 view
+2. Direct Lake detects source is a SQL view (not Delta table)
+3. Automatically falls back to DirectQuery mode
+4. Query sent to Warehouse SQL analytics endpoint
+5. Results returned to semantic model
+6. No configuration needed - this is automatic
+
+**Important**: Direct Lake on OneLake does NOT support DirectQuery fallback - queries would fail on views. This is why we use Direct Lake on SQL.
 
 ### 7.4 Create DAX Measures
 
@@ -1286,14 +1332,43 @@ SELECT TOP 10 * FROM t5.vw_payroll_detail;
 **Test workspace**: `HR_Analytics_Test`
 **Prod workspace**: `HR_Analytics_Prod`
 
-### 11.2 Configure Datasource Rules
+### 11.2 Configure Datasource Deployment Rules
 
-In deployment pipeline settings:
+**Direct Lake on SQL endpoints supports datasource deployment rules** - this is critical for Dev/Test/Prod promotion.
+
+In deployment pipeline settings → Target stage (Test/Prod):
 
 **Semantic Model datasource rules:**
-- Dev: SQL endpoint → `HR_Analytics_Warehouse` (Dev)
-- Test: SQL endpoint → `HR_Analytics_Warehouse` (Test)
-- Prod: SQL endpoint → `HR_Analytics_Warehouse` (Prod)
+
+For `HR_Analytics_Semantic`:
+- **Source**: SQL analytics endpoint
+- **Dev workspace**: 
+  - Connection: `HR_Analytics_Warehouse` SQL endpoint (Dev)
+- **Test workspace**: 
+  - Connection: `HR_Analytics_Warehouse` SQL endpoint (Test)
+  - Rule: Automatically rebind to Test warehouse endpoint
+- **Prod workspace**: 
+  - Connection: `HR_Analytics_Warehouse` SQL endpoint (Prod)
+  - Rule: Automatically rebind to Prod warehouse endpoint
+
+**How datasource rules work:**
+1. Deploy semantic model from Dev → Test
+2. Deployment pipeline automatically updates connection string
+3. Semantic model now points to Test warehouse SQL endpoint
+4. _FINAL tables read from Test warehouse Delta files
+5. No manual rebinding required
+
+**Why this only works with Direct Lake on SQL:**
+- Direct Lake on SQL uses a single SQL endpoint connection string
+- Connection string can be parameterized/replaced during deployment
+- Direct Lake on OneLake uses OneLake catalog (no single connection string)
+- OneLake catalog doesn't support datasource deployment rules
+
+**Verification:**
+After deployment, open semantic model in each environment:
+- Dev: Should connect to Dev warehouse endpoint
+- Test: Should connect to Test warehouse endpoint
+- Prod: Should connect to Prod warehouse endpoint
 
 ### 11.3 Deployment Order
 
@@ -1349,11 +1424,14 @@ In deployment pipeline settings:
 - ✅ No joins, aggregations, or heavy transformations in T5
 
 ### Semantic Layer
-- ✅ Direct Lake on SQL mode (NOT OneLake)
+- ✅ **Direct Lake on SQL mode** (NOT Direct Lake on OneLake)
+- ✅ Connection via Warehouse **SQL analytics endpoint** (not OneLake catalog)
+- ✅ Semantic model TMDL shows `Sql.Database` expression (not `AzureStorage.DataLake`)
 - ✅ _FINAL tables → Direct Lake (in-memory cache)
-- ✅ T5 views → DirectQuery fallback (automatic)
-- ✅ No special configuration needed for dual-mode
-- ✅ Datasource deployment rules configured for Dev/Test/Prod
+- ✅ T5 views → DirectQuery fallback (automatic via SQL endpoint)
+- ✅ No special configuration needed for dual-mode operation
+- ✅ Datasource deployment rules configured and working for Dev/Test/Prod
+- ✅ Single Warehouse source (not multi-source composite model)
 
 ### Orchestration
 - ✅ End-to-end pipeline completes in <30 mins
@@ -1386,7 +1464,19 @@ In deployment pipeline settings:
 | T3 | Warehouse (Dataflows Gen2) | Transformations & modeling | Append-only, no MERGE |
 | T3._FINAL | Warehouse (Zero-copy clone) | Validated snapshots | Isolates T5 from T3 failures |
 | T5 | Warehouse (Views) | Presentation layer | Git-managed view scripts |
-| Semantic | Direct Lake on SQL | Analytics consumption | Auto dual-mode (Direct Lake + DirectQuery) |
+| Semantic | **Direct Lake on SQL** | Analytics consumption | Single Warehouse SQL endpoint |
+| | | | DirectQuery fallback for views |
+| | | | Datasource deployment rules |
+
+**Why Direct Lake on SQL (not OneLake):**
+
+| Requirement | Direct Lake on SQL | Direct Lake on OneLake |
+|-------------|-------------------|------------------------|
+| T5 views with DirectQuery fallback | ✅ Required | ❌ Not supported |
+| Datasource deployment rules (Dev/Test/Prod) | ✅ Required | ❌ Not supported |
+| Single Warehouse architecture | ✅ Perfect fit | ⚠️ Overkill (multi-source) |
+| SQL-based security model | ✅ Standard pattern | ⚠️ OneLake Security only |
+| Connection method | SQL endpoint string | OneLake catalog |
 
 ---
 
@@ -1403,7 +1493,7 @@ In deployment pipeline settings:
 
 ## Related Topics
 
-- [T0-T5 Pattern Summary](pattern-summary.md) - High-level architecture overview
+- [Pattern Summary](../architecture/pattern-summary.md) - High-level architecture overview
 - [Data Factory Patterns](../patterns/data-factory-patterns.md) - T1 ingestion patterns
 - [Dataflows Gen2 Patterns](../patterns/dataflows-gen2-patterns.md) - T3 transformation patterns
 - [Warehouse Patterns](../patterns/warehouse-patterns.md) - T2/T3/T5 Warehouse patterns
