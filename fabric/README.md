@@ -1,0 +1,208 @@
+# Microsoft Fabric Data Warehouse Knowledge Base
+
+## Overview
+
+This knowledge base provides comprehensive documentation for implementing enterprise data warehouses in Microsoft Fabric using the **T0-T5 architecture pattern**. It covers patterns, best practices, and implementation guides for all layers of the architecture.
+
+**Key Technologies:**
+- **OneLake**: Unified data lake storage
+- **Data Factory**: T1 ingestion pipelines
+- **Dataflows Gen2**: T3 transformations
+- **Warehouse**: T-SQL stored procedures and views
+- **Direct Lake**: High-performance semantic models
+- **DirectQuery**: SQL pushdown for complex queries
+
+---
+
+## Quick Start
+
+### New to This Pattern?
+
+1. **Start Here**: Read [`architecture/t0-t5-pattern-summary.md`](architecture/t0-t5-pattern-summary.md) for architecture overview
+2. **Implementation**: Follow [`architecture/t0-t5-architecture-pattern.md`](architecture/t0-t5-architecture-pattern.md) for detailed guide
+3. **Technology Distinctions**: Understand [`reference/technology-distinctions.md`](reference/technology-distinctions.md) for Data Factory vs Dataflows Gen2
+
+### Common Use Cases
+
+**Setting Up a New Project:**
+1. [`architecture/t0-t5-pattern-summary.md`](architecture/t0-t5-pattern-summary.md) - Understand architecture
+2. [`architecture/t0-t5-architecture-pattern.md`](architecture/t0-t5-architecture-pattern.md) - Follow implementation guide
+3. [`operations/deployment-cicd.md`](operations/deployment-cicd.md) - Set up deployment pipeline
+
+**Implementing T1 Ingestion:**
+1. [`patterns/data-factory-patterns.md`](patterns/data-factory-patterns.md) - Data Factory patterns
+2. [`patterns/lakehouse-patterns.md`](patterns/lakehouse-patterns.md) - Lakehouse VARIANT patterns
+
+**Implementing T2 Historical Record:**
+1. [`patterns/warehouse-patterns.md`](patterns/warehouse-patterns.md) - Warehouse patterns
+2. [`patterns/t-sql-patterns.md`](patterns/t-sql-patterns.md) - T-SQL stored procedures
+
+**Implementing T3 Transformations:**
+1. [`patterns/dataflows-gen2-patterns.md`](patterns/dataflows-gen2-patterns.md) - Dataflows Gen2 patterns
+2. [`reference/technology-distinctions.md`](reference/technology-distinctions.md) - Understand when to use
+
+**Optimizing Performance:**
+1. [`optimization/performance-optimization.md`](optimization/performance-optimization.md) - Comprehensive performance guide
+2. [`optimization/direct-lake-optimization.md`](optimization/direct-lake-optimization.md) - Direct Lake optimization (includes OneLake patterns)
+
+**Security and Operations:**
+1. [`operations/security-patterns.md`](operations/security-patterns.md) - Security implementation
+2. [`operations/monitoring-observability.md`](operations/monitoring-observability.md) - Monitoring patterns
+3. [`operations/troubleshooting-guide.md`](operations/troubleshooting-guide.md) - Common issues and solutions
+
+**Reverse Engineering:**
+1. [`reference/semantic-layer-analysis.md`](reference/semantic-layer-analysis.md) - Tabular Editor and DAX Studio
+
+---
+
+## Documentation Structure
+
+### Architecture Guides
+
+- **[`architecture/t0-t5-pattern-summary.md`](architecture/t0-t5-pattern-summary.md)** - High-level architecture pattern overview
+- **[`architecture/t0-t5-architecture-pattern.md`](architecture/t0-t5-architecture-pattern.md)** - Detailed implementation guide with HR POC example
+
+### Pattern Guides
+
+- **[`patterns/data-factory-patterns.md`](patterns/data-factory-patterns.md)** - Data Factory patterns for T1 ingestion
+- **[`patterns/dataflows-gen2-patterns.md`](patterns/dataflows-gen2-patterns.md)** - Dataflows Gen2 patterns for T3 transformations
+- **[`patterns/warehouse-patterns.md`](patterns/warehouse-patterns.md)** - Warehouse patterns for T2/T3/T5
+- **[`patterns/lakehouse-patterns.md`](patterns/lakehouse-patterns.md)** - Lakehouse patterns for T1
+- **[`patterns/t-sql-patterns.md`](patterns/t-sql-patterns.md)** - T-SQL patterns for stored procedures, error handling, batch processing
+
+### Optimization Guides
+
+- **[`optimization/performance-optimization.md`](optimization/performance-optimization.md)** - Comprehensive performance optimization
+- **[`optimization/direct-lake-optimization.md`](optimization/direct-lake-optimization.md)** - Direct Lake optimization patterns (includes OneLake integration)
+
+### Operations Guides
+
+- **[`operations/deployment-cicd.md`](operations/deployment-cicd.md)** - Deployment and CI/CD patterns
+- **[`operations/monitoring-observability.md`](operations/monitoring-observability.md)** - Monitoring and observability patterns
+- **[`operations/security-patterns.md`](operations/security-patterns.md)** - Security implementation patterns
+- **[`operations/troubleshooting-guide.md`](operations/troubleshooting-guide.md)** - Troubleshooting common issues
+
+### Reference Guides
+
+- **[`reference/technology-distinctions.md`](reference/technology-distinctions.md)** - Data Factory vs Dataflows Gen2
+- **[`reference/semantic-layer-analysis.md`](reference/semantic-layer-analysis.md)** - Reverse engineering Power BI models
+- **[`reference/quick-start-guide.md`](reference/quick-start-guide.md)** - Quick start guide for new users
+- **[`reference/glossary.md`](reference/glossary.md)** - Terms and acronyms glossary
+- **[`reference/architecture-decisions.md`](reference/architecture-decisions.md)** - Architecture decision records
+
+---
+
+## Architecture Overview
+
+```
+T0: Control Layer (T-SQL)
+  ↓
+T1: Lakehouse (Data Factory → VARIANT tables)
+  ↓ (shortcuts)
+T2: Warehouse (T-SQL stored procedures → SCD2)
+  ↓ (Dataflows Gen2)
+T3: Warehouse (Dataflows Gen2 → Transformations)
+  ↓ (zero-copy clone)
+T3._FINAL: Warehouse (Validated snapshots)
+  ↓
+T5: Warehouse (T-SQL views → Presentation)
+  ↓
+Semantic Layer (Direct Lake on OneLake + DirectQuery)
+  ↓
+Power BI Reports
+```
+
+**Key Technologies:**
+- **T1**: Data Factory (ingestion) + Lakehouse (VARIANT storage)
+- **T2**: Warehouse (T-SQL stored procedures for SCD2)
+- **T3**: Warehouse (Dataflows Gen2 for transformations)
+- **T3._FINAL**: Warehouse (zero-copy clones)
+- **T5**: Warehouse (T-SQL views)
+- **Semantic**: Direct Lake on OneLake Parquet files + DirectQuery for views
+
+---
+
+## Key Concepts
+
+### T0-T5 Layers
+
+- **T0**: Control layer (logging, configuration, watermarks)
+- **T1**: Raw landing (VARIANT columns, transient)
+- **T2**: Historical record (SCD2, T-SQL stored procedures)
+- **T3**: Transformations (Dataflows Gen2, append-only)
+- **T3._FINAL**: Validated snapshots (zero-copy clones)
+- **T5**: Presentation layer (T-SQL views)
+
+### Technology Roles
+
+- **Data Factory**: T1 ingestion + pipeline orchestration
+- **Dataflows Gen2**: T3 transformations only
+- **T-SQL**: T2 stored procedures, error handling, batch processing
+- **Direct Lake**: OneLake Parquet files → in-memory cache
+- **DirectQuery**: T5 views → SQL pushdown
+
+---
+
+## Best Practices Summary
+
+### Architecture
+- ✅ Use VARIANT columns in T1 for schema flexibility
+- ✅ Use T-SQL stored procedures for T2 SCD2 operations
+- ✅ Use Dataflows Gen2 for ALL T3 transformations
+- ✅ Use zero-copy clones for T3._FINAL tables
+- ✅ Use views only in T5 (no base tables)
+
+### Performance
+- ✅ Partition large tables by date
+- ✅ Use Z-ordering for frequently filtered columns
+- ✅ Enable query folding in Dataflows Gen2
+- ✅ Create aggregations for common queries
+- ✅ Optimize DAX measures
+
+### Operations
+- ✅ Log all pipeline executions to T0
+- ✅ Implement comprehensive error handling
+- ✅ Monitor data quality metrics
+- ✅ Set up alerts for failures
+- ✅ Use version control for T5 views
+
+---
+
+## New to This Knowledge Base?
+
+**Start Here:**
+1. **[Quick Start Guide](reference/quick-start-guide.md)** - Get started quickly based on your needs
+2. **[T0-T5 Pattern Summary](architecture/t0-t5-pattern-summary.md)** - Understand the architecture
+3. **[Glossary](reference/glossary.md)** - Key terms and concepts
+
+## Supporting Documents
+
+- **[Quick Start Guide](reference/quick-start-guide.md)** - Quick start for new users
+- **[Glossary](reference/glossary.md)** - Terms and acronyms
+- **[Architecture Decisions](reference/architecture-decisions.md)** - Key architectural decisions and rationale
+- **[Technology Distinctions](reference/technology-distinctions.md)** - Data Factory vs Dataflows Gen2
+
+## Related Documentation
+
+- [Microsoft Fabric Documentation](https://learn.microsoft.com/fabric/)
+- [Power Query M Language](https://learn.microsoft.com/power-query-m/)
+- [T-SQL Reference](https://learn.microsoft.com/sql/t-sql/)
+
+---
+
+## Contributing
+
+When adding or updating documentation:
+
+1. Follow existing patterns and structure
+2. Include code examples with language tags (sql, m, dax, json, python)
+3. Add cross-references to related topics
+4. Update this README if adding new files
+5. Maintain consistency with naming conventions
+
+---
+
+## Last Updated
+
+Documentation last reviewed and updated: February 2026  
+**Status**: Comprehensive coverage with cross-references and supporting guides
