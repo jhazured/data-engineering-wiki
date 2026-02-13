@@ -588,71 +588,25 @@ FROM t3.dim_employee_FINAL;
 
 ## Pattern 7: Watermark Management
 
-### Pattern: Track Last Processed Timestamps
+**See [Incremental Loading Strategies](incremental-loading-strategies.md#watermark-based-incremental-loading) for comprehensive watermark patterns and best practices.**
 
-**Watermark Table Structure:**
+**Quick Reference:**
 
-```sql
-CREATE TABLE t0.watermark (
-    table_name VARCHAR(100) PRIMARY KEY,
-    last_processed_timestamp DATETIME2,
-    updated_at DATETIME2 DEFAULT GETDATE()
-);
-```
+Watermark-based incremental loading tracks the last processed timestamp or ID to identify new records. This pattern is used for fact tables and append-only data.
 
-**Lookup Activity:**
+**Basic Pattern:**
+1. Lookup watermark from T0.watermark table
+2. Filter source data WHERE timestamp > watermark
+3. Load to T1
+4. Process to T2
+5. Update watermark after successful processing
 
-```json
-{
-  "name": "Lookup_Watermark",
-  "type": "Lookup",
-  "typeProperties": {
-    "source": {
-      "type": "SqlSource",
-      "sqlReaderQuery": "SELECT last_processed_timestamp FROM t0.watermark WHERE table_name = 'fact_payroll'"
-    },
-    "dataset": {
-      "referenceName": "DS_Warehouse",
-      "type": "DatasetReference"
-    }
-  }
-}
-```
-
-**Use Watermark in Copy Activity:**
-
-```json
-{
-  "name": "Copy_Incremental_Data",
-  "type": "Copy",
-  "typeProperties": {
-    "source": {
-      "type": "SqlSource",
-      "sqlReaderQuery": "@concat('SELECT * FROM source_table WHERE modified_date > ''', activity('Lookup_Watermark').output.firstRow.last_processed_timestamp, '''')"
-    }
-  }
-}
-```
-
-**Update Watermark:**
-
-```sql
-MERGE INTO t0.watermark AS target
-USING (SELECT 'fact_payroll' AS table_name, GETDATE() AS last_processed_timestamp) AS source
-ON target.table_name = source.table_name
-WHEN MATCHED THEN UPDATE SET last_processed_timestamp = source.last_processed_timestamp, updated_at = GETDATE()
-WHEN NOT MATCHED THEN INSERT (table_name, last_processed_timestamp) VALUES (source.table_name, source.last_processed_timestamp);
-```
-
-### Best Practices
-
-- ✅ Use watermarks for incremental loads
-- ✅ Update watermarks after successful processing
+**Key Best Practices:**
 - ✅ Store watermarks in T0 control layer
-- ✅ Include timestamp precision appropriate for source
-- ✅ Handle watermark initialization (first run)
+- ✅ Update watermarks only after successful processing
+- ✅ Handle NULL watermarks (first run)
+- ✅ Use DATETIME2 for precise timestamps
 - ❌ Don't update watermarks before processing completes
-- ❌ Don't use watermarks for full refresh scenarios
 
 ---
 
@@ -929,6 +883,7 @@ Data Factory pipelines serve two critical roles in the T0-T5 architecture patter
 
 ## Related Topics
 
+- [Incremental Loading Strategies](incremental-loading-strategies.md) - Comprehensive incremental loading guide (watermarks, CDC, late-arriving data)
 - [T-SQL Patterns](t-sql-patterns.md) - Error handling in stored procedures
 - [Technology Distinctions](../reference/technology-distinctions.md) - Data Factory vs Dataflows Gen2
 - [Lakehouse Patterns](lakehouse-patterns.md) - T1 Lakehouse patterns

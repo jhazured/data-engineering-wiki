@@ -195,80 +195,25 @@ GO
 
 ## Pattern 2: Incremental Fact Table Loading
 
-### When to Use
+**See [Incremental Loading Strategies](incremental-loading-strategies.md#watermark-based-incremental-loading) for comprehensive incremental loading patterns, including watermark-based loading, CDC, late-arriving data handling, and comparison matrix.**
 
-- Large fact tables
-- Frequent updates
-- Performance optimization
-- Watermark-based loading
+**Quick Reference:**
 
-### Implementation Pattern
+Incremental fact table loading uses watermark-based patterns to process only new records since the last load.
 
-**Watermark-Based Incremental Load:**
+**Key Pattern:**
+1. Get watermark (last processed timestamp)
+2. Filter source data WHERE timestamp > watermark
+3. Insert new records
+4. Update surrogate keys
+5. Update watermark after successful processing
 
-```sql
-CREATE PROCEDURE t2.usp_load_fact_payroll_incremental
-AS
-BEGIN
-    SET NOCOUNT ON;
-    
-    -- Get watermark (last loaded timestamp)
-    DECLARE @last_load DATETIME2;
-    SELECT @last_load = ISNULL(MAX(source_ingested_at), '1900-01-01')
-    FROM t2.fact_payroll;
-    
-    -- Insert only new payroll records
-    INSERT INTO t2.fact_payroll (
-        payroll_id, employee_id, pay_period_start, pay_period_end, pay_date,
-        regular_hours, overtime_hours, hourly_rate, gross_pay,
-        tax_deducted, superannuation, health_insurance, net_pay,
-        payment_method, source_ingested_at
-    )
-    SELECT 
-        s.payroll_id,
-        s.employee_id,
-        s.pay_period_start,
-        s.pay_period_end,
-        s.pay_date,
-        s.regular_hours,
-        s.overtime_hours,
-        s.hourly_rate,
-        s.gross_pay,
-        s.tax_deducted,
-        s.superannuation,
-        s.health_insurance,
-        s.net_pay,
-        s.payment_method,
-        s.ingested_at
-    FROM t1_payroll s
-    WHERE s.ingested_at > @last_load
-    AND NOT EXISTS (
-        SELECT 1 FROM t2.fact_payroll f WHERE f.payroll_id = s.payroll_id
-    );
-    
-    -- Update surrogate keys
-    UPDATE f
-    SET 
-        f.emp_key = e.emp_key,
-        f.dept_key = d.dept_key,
-        f.pay_date_key = CAST(CONVERT(VARCHAR(8), f.pay_date, 112) AS INT)
-    FROM t2.fact_payroll f
-    LEFT JOIN t2.dim_employee e ON f.employee_id = e.employee_id AND e.is_current = 1
-    LEFT JOIN t2.dim_department d ON e.department_id = d.dept_id AND d.is_current = 1
-    WHERE f.emp_key IS NULL;
-END;
-GO
-```
-
-### Best Practices
-
+**Best Practices:**
 - ✅ Use watermarks for incremental loads
 - ✅ Check for duplicates before insert
 - ✅ Update surrogate keys after insert
 - ✅ Index on watermark column
 - ✅ Log incremental load metrics
-- ❌ Don't load duplicates
-- ❌ Don't skip surrogate key updates
 
 ---
 
@@ -800,6 +745,7 @@ GO
 
 ## Related Topics
 
+- [Incremental Loading Strategies](incremental-loading-strategies.md) - Comprehensive incremental loading guide (watermarks, CDC, incremental SCD2, late-arriving data)
 - [T-SQL Patterns](t-sql-patterns.md) - Comprehensive T-SQL patterns (error handling, temp tables, batch processing)
 - [Performance Optimization](../optimization/performance-optimization.md) - Comprehensive performance optimization guide
 - [Dataflows Gen2 Patterns](dataflows-gen2-patterns.md) - T3 transformation patterns

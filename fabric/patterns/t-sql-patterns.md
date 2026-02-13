@@ -653,6 +653,7 @@ T-SQL patterns in the T0-T5 architecture focus on:
 
 ## Related Topics
 
+- [Incremental Loading Strategies](incremental-loading-strategies.md) - Comprehensive incremental loading patterns (watermarks, CDC, incremental SCD2, late-arriving data)
 - [Warehouse Patterns](warehouse-patterns.md) - Warehouse-specific patterns (references T-SQL patterns)
 - [Performance Optimization](../optimization/performance-optimization.md) - T-SQL query performance optimization
 - [Monitoring & Observability](../operations/monitoring-observability.md) - Error logging and monitoring

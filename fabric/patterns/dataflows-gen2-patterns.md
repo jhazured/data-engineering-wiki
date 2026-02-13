@@ -37,50 +37,23 @@ Dataflows Gen2 is Microsoft Fabric's cloud-based data transformation service tha
 
 ## Pattern 1: Incremental Refresh
 
-### When to Use
+**See [Incremental Loading Strategies](incremental-loading-strategies.md#dataflows-gen2-incremental-refresh) for comprehensive Dataflows Gen2 incremental refresh patterns and best practices.**
 
-- Large datasets that don't need full refresh
-- Source systems that support incremental queries
-- Performance optimization for large tables
+**Quick Reference:**
 
-### Implementation Pattern
+Dataflows Gen2 supports incremental refresh for T3 transformations, allowing you to process only new or changed data.
 
-**Step 1: Configure Incremental Refresh**
+**Key Steps:**
+1. Configure incremental refresh in Dataflow Gen2 settings
+2. Add incremental filter using Power Query M
+3. Configure refresh policy and schedule
 
-1. In Dataflow Gen2, select the query/table
-2. Go to **Settings** → **Incremental refresh**
-3. Enable incremental refresh
-4. Configure:
-   - **Range start**: How far back to look (e.g., 30 days)
-   - **Range end**: Current date/time
-   - **Incremental column**: Column to use for filtering (typically date/timestamp)
-
-**Step 2: Add Incremental Filter**
-
-```m
-let
-    Source = Sql.Database("server", "database"),
-    IncrementalFilter = Table.SelectRows(
-        Source,
-        each [LastModifiedDate] >= RangeStart and [LastModifiedDate] < RangeEnd
-    )
-in
-    IncrementalFilter
-```
-
-**Step 3: Configure Destination**
-
-- **Update method**: Append (for T3 layer)
-- **Incremental refresh policy**: Set in dataflow settings
-
-### Best Practices
-
+**Best Practices:**
+- ✅ Use incremental refresh for large tables (> 1M rows)
 - ✅ Use date/timestamp columns for incremental filtering
-- ✅ Ensure source column is indexed for performance
-- ✅ Set appropriate range (balance between performance and data freshness)
+- ✅ Schedule periodic full refresh
 - ✅ Monitor incremental refresh performance
 - ❌ Don't use incremental refresh for small tables (< 1M rows)
-- ❌ Don't use incremental refresh if source doesn't support date filtering
 
 ---
 
@@ -760,6 +733,7 @@ Incremental refresh: Disabled
 ## Related Topics
 
 - [Performance Optimization](../optimization/performance-optimization.md) - Comprehensive performance optimization guide
+- [Incremental Loading Strategies](incremental-loading-strategies.md) - Comprehensive incremental loading guide (includes Dataflows Gen2 incremental refresh)
 - [Technology Distinctions](../reference/technology-distinctions.md) - Data Factory vs Dataflows Gen2
 - [Warehouse Patterns](warehouse-patterns.md) - Warehouse patterns for T2/T3/T5
 - [T0-T5 Architecture Pattern](../architecture/architecture-pattern.md) - Detailed implementation guide

@@ -64,7 +64,8 @@ This knowledge base provides comprehensive documentation for implementing enterp
 | **New to T0-T5 pattern** | [`pattern-summary.md`](fabric/architecture/pattern-summary.md) | 15 min | [`quick-start-guide.md`](fabric/reference/quick-start-guide.md) |
 | **Implementing new project** | [`architecture-pattern.md`](fabric/architecture/architecture-pattern.md) | 2 hours | [`project-setup-checklist.md`](fabric/templates/project-setup-checklist.md) |
 | **Setting up T1 ingestion** | [`data-factory-patterns.md`](fabric/patterns/data-factory-patterns.md) | 45 min | [`lakehouse-patterns.md`](fabric/patterns/lakehouse-patterns.md) |
-| **Implementing T2 SCD2** | [`warehouse-patterns.md`](fabric/patterns/warehouse-patterns.md) | 60 min | [`t-sql-patterns.md`](fabric/patterns/t-sql-patterns.md) |
+| **Implementing incremental loading** | [`incremental-loading-strategies.md`](fabric/patterns/incremental-loading-strategies.md) | 60 min | [`data-factory-patterns.md`](fabric/patterns/data-factory-patterns.md), [`warehouse-patterns.md`](fabric/patterns/warehouse-patterns.md) |
+| **Implementing T2 SCD2** | [`warehouse-patterns.md`](fabric/patterns/warehouse-patterns.md) | 60 min | [`t-sql-patterns.md`](fabric/patterns/t-sql-patterns.md), [`incremental-loading-strategies.md`](fabric/patterns/incremental-loading-strategies.md) |
 | **Implementing T3 transformations** | [`dataflows-gen2-patterns.md`](fabric/patterns/dataflows-gen2-patterns.md) | 60 min | [`technology-distinctions.md`](fabric/reference/technology-distinctions.md) |
 | **Setting up Direct Lake** | [`direct-lake-optimization.md`](fabric/optimization/direct-lake-optimization.md) | 45 min | [`architecture-pattern.md`](fabric/architecture/architecture-pattern.md) Phase 7 |
 | **Optimizing performance** | [`performance-optimization.md`](fabric/optimization/performance-optimization.md) | 60 min | Layer-specific optimization sections |
