@@ -10,14 +10,14 @@ This guide helps you get started quickly based on your role and needs.
 
 ### Step 1: Understand the Architecture (15 minutes)
 
-1. Read **[T0-T5 Pattern Summary](../architecture/t0-t5-pattern-summary.md)** - High-level overview
+1. Read **[T0-T5 Pattern Summary](../architecture/pattern-summary.md)** - High-level overview
 2. Review the architecture diagram
 3. Understand each layer's purpose
 
 ### Step 2: Choose Your Path
 
 **I want to implement a new project:**
-→ Follow **[T0-T5 Architecture Pattern](../architecture/t0-t5-architecture-pattern.md)** (detailed implementation guide)
+→ Follow **[T0-T5 Architecture Pattern](../architecture/architecture-pattern.md)** (detailed implementation guide)
 
 **I want to understand a specific technology:**
 → See "Technology-Specific Guides" below
@@ -92,7 +92,7 @@ This guide helps you get started quickly based on your role and needs.
 
 **Files to Read:**
 1. [Direct Lake Optimization](../optimization/direct-lake-optimization.md) - All patterns
-2. [T0-T5 Architecture Pattern](../architecture/t0-t5-architecture-pattern.md) - Phase 7 (Semantic Model)
+2. [T0-T5 Architecture Pattern](../architecture/architecture-pattern.md) - Phase 7 (Semantic Model)
 3. [Performance Optimization](../optimization/performance-optimization.md) - DAX optimization
 
 **Key Points:**
@@ -130,7 +130,7 @@ This guide helps you get started quickly based on your role and needs.
 
 **Files to Read:**
 1. [Security Patterns](../operations/security-patterns.md) - All patterns
-2. [T0-T5 Architecture Pattern](../architecture/t0-t5-architecture-pattern.md) - Security sections
+2. [T0-T5 Architecture Pattern](../architecture/architecture-pattern.md) - Security sections
 
 **Key Points:**
 - Implement RLS at T5 layer
@@ -216,9 +216,9 @@ This guide helps you get started quickly based on your role and needs.
 
 ### For New Projects
 
-1. **[T0-T5 Pattern Summary](../architecture/t0-t5-pattern-summary.md)** - Understand architecture
+1. **[T0-T5 Pattern Summary](../architecture/pattern-summary.md)** - Understand architecture
 2. **[Technology Distinctions](technology-distinctions.md)** - Understand tool roles
-3. **[T0-T5 Architecture Pattern](../architecture/t0-t5-architecture-pattern.md)** - Follow implementation guide
+3. **[T0-T5 Architecture Pattern](../architecture/architecture-pattern.md)** - Follow implementation guide
 4. Technology-specific patterns as needed
 
 ### For Specific Tasks
@@ -352,5 +352,5 @@ A: See [Monitoring & Observability](../operations/monitoring-observability.md) f
 
 **Need Help?**
 - Check [Troubleshooting Guide](../operations/troubleshooting-guide.md)
-- Review [T0-T5 Architecture Pattern](../architecture/t0-t5-architecture-pattern.md)
+- Review [T0-T5 Architecture Pattern](../architecture/architecture-pattern.md)
 - See [README](README.md) for complete file index

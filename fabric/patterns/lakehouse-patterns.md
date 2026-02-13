@@ -539,7 +539,7 @@ USING DELTA;
 - [Performance Optimization](../optimization/performance-optimization.md) - Comprehensive performance optimization guide
 - [Data Factory Patterns](data-factory-patterns.md) - T1 ingestion patterns
 - [Warehouse Patterns](warehouse-patterns.md) - Warehouse patterns (uses shortcuts to Lakehouse)
-- [T0-T5 Architecture Pattern](../architecture/t0-t5-architecture-pattern.md) - Detailed implementation guide
+- [T0-T5 Architecture Pattern](../architecture/architecture-pattern.md) - Detailed implementation guide
 
 ---
 

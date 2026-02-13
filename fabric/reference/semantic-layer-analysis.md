@@ -994,6 +994,6 @@ This guide provides a complete workflow for:
 ## Related Topics
 
 - [Direct Lake Optimization](../optimization/direct-lake-optimization.md) - Optimizing Direct Lake semantic models
-- [T0-T5 Architecture Pattern](../architecture/t0-t5-architecture-pattern.md) - Semantic layer implementation
+- [T0-T5 Architecture Pattern](../architecture/architecture-pattern.md) - Semantic layer implementation
 - [Performance Optimization](../optimization/performance-optimization.md) - DAX query optimization
 - [Troubleshooting Guide](../operations/troubleshooting-guide.md) - Semantic model issues

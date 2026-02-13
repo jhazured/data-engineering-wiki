@@ -686,7 +686,7 @@ df_final.write.format("delta").mode("overwrite") \
 ## Related Topics
 
 - [Performance Optimization](performance-optimization.md) - Comprehensive performance optimization guide
-- [OneLake Architecture](../architecture/t0-t5-pattern-summary.md#onelake-integration) - OneLake in T0-T5 pattern
+- [OneLake Architecture](../architecture/pattern-summary.md#onelake-integration) - OneLake in T0-T5 pattern
 - [Semantic Layer Analysis](../reference/semantic-layer-analysis.md) - Reverse engineering semantic models
 - [Troubleshooting Guide](../operations/troubleshooting-guide.md) - Common Direct Lake issues
 

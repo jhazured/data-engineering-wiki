@@ -1403,7 +1403,7 @@ In deployment pipeline settings:
 
 ## Related Topics
 
-- [T0-T5 Pattern Summary](t0-t5-pattern-summary.md) - High-level architecture overview
+- [T0-T5 Pattern Summary](pattern-summary.md) - High-level architecture overview
 - [Data Factory Patterns](../patterns/data-factory-patterns.md) - T1 ingestion patterns
 - [Dataflows Gen2 Patterns](../patterns/dataflows-gen2-patterns.md) - T3 transformation patterns
 - [Warehouse Patterns](../patterns/warehouse-patterns.md) - T2/T3/T5 Warehouse patterns

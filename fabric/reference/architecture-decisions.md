@@ -178,7 +178,7 @@ This document records key architectural decisions for the T0-T5 data warehouse p
 - Automatic cache management
 - Optimize Parquet files for best performance
 
-**Related**: [Direct Lake Optimization](../optimization/direct-lake-optimization.md), [OneLake Architecture](../architecture/t0-t5-pattern-summary.md#onelake-integration)
+**Related**: [Direct Lake Optimization](../optimization/direct-lake-optimization.md), [OneLake Architecture](../architecture/pattern-summary.md#onelake-integration)
 
 ---
 
@@ -290,7 +290,7 @@ This document records key architectural decisions for the T0-T5 data warehouse p
 - Easy to modify
 - Automatic DirectQuery for views
 
-**Related**: [Warehouse Patterns](../patterns/warehouse-patterns.md#pattern-5-presentation-layer-t5), [T0-T5 Pattern Summary](../architecture/t0-t5-pattern-summary.md#t5-warehouse-presentation-layer)
+**Related**: [Warehouse Patterns](../patterns/warehouse-patterns.md#pattern-5-presentation-layer-t5), [T0-T5 Pattern Summary](../architecture/pattern-summary.md#t5-warehouse-presentation-layer)
 
 ---
 
@@ -369,6 +369,6 @@ This document records key architectural decisions for the T0-T5 data warehouse p
 
 ## Related Topics
 
-- [T0-T5 Pattern Summary](../architecture/t0-t5-pattern-summary.md) - Architecture overview
+- [T0-T5 Pattern Summary](../architecture/pattern-summary.md) - Architecture overview
 - [Technology Distinctions](technology-distinctions.md) - Technology roles
-- [T0-T5 Architecture Pattern](../architecture/t0-t5-architecture-pattern.md) - Implementation guide
+- [T0-T5 Architecture Pattern](../architecture/architecture-pattern.md) - Implementation guide

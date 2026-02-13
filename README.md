@@ -18,15 +18,15 @@ This knowledge base provides comprehensive documentation for implementing enterp
 
 ### New to This Pattern?
 
-1. **Start Here**: Read [`fabric/architecture/t0-t5-pattern-summary.md`](fabric/architecture/t0-t5-pattern-summary.md) for architecture overview
-2. **Implementation**: Follow [`fabric/architecture/t0-t5-architecture-pattern.md`](fabric/architecture/t0-t5-architecture-pattern.md) for detailed guide
+1. **Start Here**: Read [`fabric/architecture/pattern-summary.md`](fabric/architecture/pattern-summary.md) for architecture overview
+2. **Implementation**: Follow [`fabric/architecture/architecture-pattern.md`](fabric/architecture/architecture-pattern.md) for detailed guide
 3. **Technology Distinctions**: Understand [`fabric/reference/technology-distinctions.md`](fabric/reference/technology-distinctions.md) for Data Factory vs Dataflows Gen2
 
 ### Common Use Cases
 
 **Setting Up a New Project:**
-1. [`fabric/architecture/t0-t5-pattern-summary.md`](fabric/architecture/t0-t5-pattern-summary.md) - Understand architecture
-2. [`fabric/architecture/t0-t5-architecture-pattern.md`](fabric/architecture/t0-t5-architecture-pattern.md) - Follow implementation guide
+1. [`fabric/architecture/pattern-summary.md`](fabric/architecture/pattern-summary.md) - Understand architecture
+2. [`fabric/architecture/architecture-pattern.md`](fabric/architecture/architecture-pattern.md) - Follow implementation guide
 3. [`fabric/operations/deployment-cicd.md`](fabric/operations/deployment-cicd.md) - Set up deployment pipeline
 
 **Implementing T1 Ingestion:**
@@ -59,8 +59,8 @@ This knowledge base provides comprehensive documentation for implementing enterp
 
 ### Architecture Guides
 
-- **[`fabric/architecture/t0-t5-pattern-summary.md`](fabric/architecture/t0-t5-pattern-summary.md)** - High-level architecture pattern overview
-- **[`fabric/architecture/t0-t5-architecture-pattern.md`](fabric/architecture/t0-t5-architecture-pattern.md)** - Detailed implementation guide with HR POC example
+- **[`fabric/architecture/pattern-summary.md`](fabric/architecture/pattern-summary.md)** - High-level architecture pattern overview
+- **[`fabric/architecture/architecture-pattern.md`](fabric/architecture/architecture-pattern.md)** - Detailed implementation guide with HR POC example
 
 ### Pattern Guides
 
@@ -172,7 +172,7 @@ Power BI Reports
 
 **Start Here:**
 1. **[Quick Start Guide](fabric/reference/quick-start-guide.md)** - Get started quickly based on your needs
-2. **[T0-T5 Pattern Summary](fabric/architecture/t0-t5-pattern-summary.md)** - Understand the architecture
+2. **[T0-T5 Pattern Summary](fabric/architecture/pattern-summary.md)** - Understand the architecture
 3. **[Glossary](fabric/reference/glossary.md)** - Key terms and concepts
 
 ## Supporting Documents

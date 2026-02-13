@@ -271,7 +271,7 @@ Dataflows Gen2 (T3)
 
 - [Data Factory Patterns](../patterns/data-factory-patterns.md) - Data Factory implementation patterns
 - [Dataflows Gen2 Patterns](../patterns/dataflows-gen2-patterns.md) - Dataflows Gen2 implementation patterns
-- [T0-T5 Architecture Pattern](../architecture/t0-t5-architecture-pattern.md) - Architecture implementation guide
+- [T0-T5 Architecture Pattern](../architecture/architecture-pattern.md) - Architecture implementation guide
 
 ---
 

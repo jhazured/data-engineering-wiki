@@ -487,7 +487,7 @@ Deployment and CI/CD patterns focus on:
 
 ## Related Topics
 
-- [T0-T5 Architecture Pattern](../architecture/t0-t5-architecture-pattern.md) - Implementation guide
+- [T0-T5 Architecture Pattern](../architecture/architecture-pattern.md) - Implementation guide
 - [Data Factory Patterns](../patterns/data-factory-patterns.md) - Pipeline patterns
 - [Monitoring & Observability](monitoring-observability.md) - Deployment monitoring
 - [Troubleshooting Guide](troubleshooting-guide.md) - Deployment issues

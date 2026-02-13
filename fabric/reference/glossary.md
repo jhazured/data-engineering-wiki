@@ -259,6 +259,6 @@
 
 ## Related Topics
 
-- [T0-T5 Pattern Summary](../architecture/t0-t5-pattern-summary.md) - Architecture overview
+- [T0-T5 Pattern Summary](../architecture/pattern-summary.md) - Architecture overview
 - [Technology Distinctions](technology-distinctions.md) - Technology roles
-- [T0-T5 Architecture Pattern](../architecture/t0-t5-architecture-pattern.md) - Implementation guide
+- [T0-T5 Architecture Pattern](../architecture/architecture-pattern.md) - Implementation guide

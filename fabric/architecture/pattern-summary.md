@@ -514,7 +514,7 @@ This pattern serves as a reference architecture that can be adapted to specific 
 
 ## Related Topics
 
-- [T0-T5 Architecture Pattern](t0-t5-architecture-pattern.md) - Detailed implementation guide
+- [T0-T5 Architecture Pattern](architecture-pattern.md) - Detailed implementation guide
 - [Technology Distinctions](../reference/technology-distinctions.md) - Data Factory vs Dataflows Gen2
 - [Data Factory Patterns](../patterns/data-factory-patterns.md) - T1 ingestion patterns
 - [Dataflows Gen2 Patterns](../patterns/dataflows-gen2-patterns.md) - T3 transformation patterns

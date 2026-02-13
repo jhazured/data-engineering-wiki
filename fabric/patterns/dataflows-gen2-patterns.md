@@ -762,7 +762,7 @@ Incremental refresh: Disabled
 - [Performance Optimization](../optimization/performance-optimization.md) - Comprehensive performance optimization guide
 - [Technology Distinctions](../reference/technology-distinctions.md) - Data Factory vs Dataflows Gen2
 - [Warehouse Patterns](warehouse-patterns.md) - Warehouse patterns for T2/T3/T5
-- [T0-T5 Architecture Pattern](../architecture/t0-t5-architecture-pattern.md) - Detailed implementation guide
+- [T0-T5 Architecture Pattern](../architecture/architecture-pattern.md) - Detailed implementation guide
 - [Troubleshooting Guide](../operations/troubleshooting-guide.md) - Common Dataflows Gen2 issues
 
 ---

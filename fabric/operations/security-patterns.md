@@ -575,7 +575,7 @@ Security patterns in the T0-T5 architecture focus on:
 
 ## Related Topics
 
-- [T0-T5 Architecture Pattern](../architecture/t0-t5-architecture-pattern.md) - Architecture overview
+- [T0-T5 Architecture Pattern](../architecture/architecture-pattern.md) - Architecture overview
 - [Warehouse Patterns](../patterns/warehouse-patterns.md) - Warehouse security patterns
 - [Lakehouse Patterns](../patterns/lakehouse-patterns.md) - Lakehouse security patterns
 - [Monitoring & Observability](monitoring-observability.md) - Audit logging

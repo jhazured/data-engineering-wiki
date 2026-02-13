@@ -804,7 +804,7 @@ GO
 - [Performance Optimization](../optimization/performance-optimization.md) - Comprehensive performance optimization guide
 - [Dataflows Gen2 Patterns](dataflows-gen2-patterns.md) - T3 transformation patterns
 - [Data Factory Patterns](data-factory-patterns.md) - T1 ingestion patterns
-- [T0-T5 Architecture Pattern](../architecture/t0-t5-architecture-pattern.md) - Detailed implementation guide
+- [T0-T5 Architecture Pattern](../architecture/architecture-pattern.md) - Detailed implementation guide
 
 ---
 
