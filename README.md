@@ -162,6 +162,10 @@ This knowledge base provides comprehensive documentation for implementing enterp
 - **[`fabric/templates/adr-template.md`](fabric/templates/adr-template.md)** - Architecture Decision Record template
 - **[`fabric/templates/incident-response-playbook.md`](fabric/templates/incident-response-playbook.md)** - Incident response playbook
 
+### Practice Exams (Microsoft Learn)
+
+- **[`fabric/practice-exams/azure-fabric-practice-exam.md`](fabric/practice-exams/azure-fabric-practice-exam.md)** - DP-600 Azure Fabric practice exam: 150 questions, answers, explanations, 100% skills coverage (~3 hours)
+
 ---
 
 ## Architecture Overview
